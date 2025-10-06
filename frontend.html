@@ -1,38 +1,141 @@
-<form id="uploadForm">
-  <input type="text" name="mainFile" placeholder="Arquivo principal" required />
-  <input type="number" name="sizeMB" placeholder="Tamanho em MB" required />
-  <input type="text" name="botId" placeholder="Bot ID" required />
-  <input type="file" name="zipFile" accept=".zip" required />
-  <button type="submit">Enviar</button>
-</form>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload do Bot | Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
 
-<script>
-document.getElementById("uploadForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const params = new URLSearchParams(window.location.search);
-  const userId = params.get("user");
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1a1a2e, #162447);
+    }
 
-  const file = e.target.zipFile.files[0];
-  const reader = new FileReader();
-  reader.onload = async () => {
-    const zipBase64 = reader.result.split(',')[1];
-    const data = {
-      userId,
-      mainFile: e.target.mainFile.value,
-      sizeMB: e.target.sizeMB.value,
-      botId: e.target.botId.value,
-      zipBase64
-    };
+    .container {
+      background: rgba(0,0,0,0.7);
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      color: #fff;
+      backdrop-filter: blur(10px);
+    }
 
-    const res = await fetch("/api/upload", {
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #00bfff;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="file"]:focus {
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 0 8px #00bfff;
+    }
+
+    button {
+      padding: 12px 15px;
+      background: #00bfff;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #0099e6;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,191,255,0.4);
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: -10px;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📂 Upload do Bot</h1>
+    <form id="uploadForm">
+      <input type="text" name="mainFile" placeholder="Arquivo principal (ex: index.js)" required />
+      <input type="number" name="sizeMB" placeholder="Tamanho em MB" min="100" required />
+      <input type="text" name="botId" placeholder="Bot ID" required />
+      <input type="file" name="zipFile" accept=".zip" required />
+      <span class="note">Máx: 20MB | Apenas arquivos .zip</span>
+      <button type="submit">Enviar Bot</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("user");
+
+      const file = e.target.zipFile.files[0];
+      if (!file) return alert("Escolha um arquivo .zip");
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const zipBase64 = reader.result.split(',')[1];
+        const data = {
+          userId,
+          mainFile: e.target.mainFile.value,
+          sizeMB: e.target.sizeMB.value,
+          botId: e.target.botId.value,
+          zipBase64
+        };
+
+        const res = await fetch("/api/upload", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(data)
 });
 
+        const json = await res.json();
+        if (json.success) alert("Bot enviado com sucesso!");
+        else alert("Erro ao enviar bot");
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
 
-    if ((await res.json()).success) alert("Bot enviado com sucesso!");
-  };
-  reader.readAsDataURL(file);
-});
-</script>
