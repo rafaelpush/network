@@ -1,0 +1,19 @@
+{
+  "name": "network-frontend",
+  "version": "1.0.0",
+  "description": "Frontend e backend para upload de bots - DevNet Hub",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev",      // só pra testar localmente
+    "build": "echo 'Build finalizado'" // se você tiver um bundler pode colocar aqui
+  },
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.4.1",      // necessário para funções receberem arquivos
+    "adm-zip": "^0.5.9"          // se for manipular zip no backend
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.20.0"    // pra rodar local (opcional)
+  }
+}
