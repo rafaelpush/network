@@ -24,11 +24,12 @@ document.getElementById("uploadForm").addEventListener("submit", async e => {
       zipBase64
     };
 
-    const res = await fetch("https://network.netlify.app/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+    const res = await fetch("/api/upload", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)
+});
+
 
     if ((await res.json()).success) alert("Bot enviado com sucesso!");
   };
