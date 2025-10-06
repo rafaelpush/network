@@ -1,0 +1,37 @@
+<form id="uploadForm">
+  <input type="text" name="mainFile" placeholder="Arquivo principal" required />
+  <input type="number" name="sizeMB" placeholder="Tamanho em MB" required />
+  <input type="text" name="botId" placeholder="Bot ID" required />
+  <input type="file" name="zipFile" accept=".zip" required />
+  <button type="submit">Enviar</button>
+</form>
+
+<script>
+document.getElementById("uploadForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get("user");
+
+  const file = e.target.zipFile.files[0];
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const zipBase64 = reader.result.split(',')[1];
+    const data = {
+      userId,
+      mainFile: e.target.mainFile.value,
+      sizeMB: e.target.sizeMB.value,
+      botId: e.target.botId.value,
+      zipBase64
+    };
+
+    const res = await fetch("https://network.netlify.app/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if ((await res.json()).success) alert("Bot enviado com sucesso!");
+  };
+  reader.readAsDataURL(file);
+});
+</script>
